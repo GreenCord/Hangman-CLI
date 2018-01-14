@@ -3,7 +3,7 @@ var Word = require('./word');
 var Letter = require('./letter');
 var wordList = require('./wordList');
 
-
+// Game constructor: Track wins, losses, the game word, the word's letters, and the guessedcount variable.
 function Game(){
 	this.wins = 0;
 	this.losses = 0;
@@ -12,6 +12,13 @@ function Game(){
 	this.guessedcount = 0;
 }
 
+
+// ----------------------------------------------------------------------------
+// Method: displayText(txt,char)
+// ----------------------------------------------------------------------------
+// Description: Displays txt on screen with various decoration lines, if
+//              a - or = char is passed in.
+// ----------------------------------------------------------------------------
 Game.prototype.displayText = function(txt,char){
 	if (char === '-') {
 		console.log('----------------------------------------');
@@ -26,6 +33,13 @@ Game.prototype.displayText = function(txt,char){
 	}
 };
 
+// ----------------------------------------------------------------------------
+// Method: initGame
+// ----------------------------------------------------------------------------
+// Description: Resets everything in the instance of the game object, and
+//              starts the game over again with a new word.
+// ----------------------------------------------------------------------------
+
 Game.prototype.initGame = function(){
 	this.gameWord.resetWord();
 	this.gameWord.getWord(wordList);
@@ -37,6 +51,13 @@ Game.prototype.initGame = function(){
 	this.displayWord('Guess a letter: ');
 };
 
+
+// ----------------------------------------------------------------------------
+// Method: getTrue
+// ----------------------------------------------------------------------------
+// Description: Returns the int count of how many letters have been guessed.
+// ----------------------------------------------------------------------------
+
 Game.prototype.getTrue = function() {
 	var int = 0;
 	for (var i = 0; i < this.letters.length; i++) {
@@ -47,9 +68,73 @@ Game.prototype.getTrue = function() {
 	return int;
 };
 
-Game.prototype.userGuess = function(message) {
-	console.log('[TODO] Get user guess.');
+// ----------------------------------------------------------------------------
+// Method: userGuess
+// ----------------------------------------------------------------------------
+// Description: Inquirer prompt to collect the user's guessed letter.
+//              Checks if user's letter has already been guessed,
+//              or whether the letter matches any in the word letters.
+//              Depending on the outcome, will send the message txt to
+//              displayWord. For the next round.
+// ----------------------------------------------------------------------------
+
+Game.prototype.userGuess = function(gameobj, message) {
+	// Get user's letter to guess
+	inquirer.prompt([
+		{
+			type: 'input',
+			name: 'guess',
+			message: message
+		}
+	])
+	.then(
+		function(user){
+			guessedcount = 0;
+			var existingmatch = false;
+			var txt = '';
+			// check guess against previously guessed letters
+			for (var i = 0; i < gameobj.gameWord.lettersguessed.length; i++) {
+				if (user.guess.toLowerCase() === gameobj.gameWord.lettersguessed[i].toLowerCase()) {
+					existingmatch = true;
+				}
+			}
+
+			// check guess against all letters, mark guessed as true for matches
+			for (var j = 0; j < gameobj.letters.length; j++) {
+				if (user.guess.toLowerCase() === gameobj.letters[j].letter.toLowerCase()) {
+					gameobj.letters[j].guessed = true;
+					gameobj.guessedcount++;
+				} // end if
+			} // end for
+
+			if (existingmatch) {
+				txt = 'You already guessed that letter. Guess another letter: ';
+			} else if (guessedcount === 0) {
+				txt = 'Letter not found. Uh oh. \nGuess a letter: ';
+				gameobj.gameWord.guesses--;
+				gameobj.gameWord.lettersguessed.push(user.guess);
+			} else {
+				txt = 'Guess a letter: ';
+			}
+			gameobj.displayWord(txt);
+	});
 };
+
+// ----------------------------------------------------------------------------
+// Method: displayWord
+// ----------------------------------------------------------------------------
+// Description: Resets the display, prints the header, the hangman, and
+//              calculates the current status of the letters guessed in the
+//              word. Displays the remaining number of guesses, and the 
+//              letters currently guessed.
+//              Checks whether the game has been won (all letters guessed) or
+//              game has been lost (no guesses remaining) and sets conditions.
+//              Game logic determins whether to:
+//              - Get a new user guess (guesses remaining, game not won)
+//              - Prompt to play again (game won or lost)
+//                  - If game is won, init the game to play new word
+//                  - If game is lost, end game and print score.
+// ----------------------------------------------------------------------------
 
 Game.prototype.displayWord = function(txt){
 // clear the screen and display header
@@ -90,18 +175,17 @@ Game.prototype.displayWord = function(txt){
 // get user guess if guesses remaining, or else the game is over, ask to play again
 	if ((this.gameWord.guesses > 0) && !this.gameWord.guessed) {
 		this.gameWord.first = false;
-		this.userGuess(txt);
+		this.userGuess(this,txt);
 	} else {
-		if (this.playAgain()) {
-			initGame();
-		} else {
-			console.log('\033c');
-			this.displayText('Thanks for playing!!!','=');
-			this.displayText('You won ' + this.wins + ' games, and lost ' + this.losses + ' games.','-');
-		}
+		this.playAgain(this);
 	}	
 };
 
+// ----------------------------------------------------------------------------
+// Method: playAgain
+// ----------------------------------------------------------------------------
+// Description: Inquirer prompt to play again.
+// ----------------------------------------------------------------------------
 Game.prototype.playAgain = function(gameobj){
 	inquirer.prompt([
 		{
@@ -114,7 +198,9 @@ Game.prototype.playAgain = function(gameobj){
 		if (user.again === 'Yes') {
 			gameobj.initGame();
 		} else {
-			return false;
+			console.log('\033c');
+			gameobj.displayText('Thanks for playing!!!','=');
+			gameobj.displayText('You won ' + gameobj.wins + ' games, and lost ' + gameobj.losses + ' games.','-');
 		}
 	});
 };
