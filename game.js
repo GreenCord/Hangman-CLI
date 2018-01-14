@@ -4,7 +4,8 @@ var Letter = require('./letter');
 var wordList = require('./wordList');
 
 // Game constructor: Track wins, losses, the game word, the word's letters, and the guessedcount variable.
-function Game(){
+function Game(username){
+	this.username = username
 	this.wins = 0;
 	this.losses = 0;
 	this.gameWord = new Word();
@@ -48,7 +49,7 @@ Game.prototype.initGame = function(){
 	for (var i = 0; i < this.gameWord.word.length; i++) {
 		this.letters[i] = new Letter(this.gameWord.word[i]);
 	}
-	this.displayWord('Guess a letter: ');
+	this.displayWord('Hey ' + this.username + ', guess a letter: ');
 };
 
 
@@ -89,7 +90,7 @@ Game.prototype.userGuess = function(gameobj, message) {
 	])
 	.then(
 		function(user){
-			guessedcount = 0;
+			gameobj.guessedcount = 0;
 			var existingmatch = false;
 			var txt = '';
 			// check guess against previously guessed letters
@@ -108,9 +109,9 @@ Game.prototype.userGuess = function(gameobj, message) {
 			} // end for
 
 			if (existingmatch) {
-				txt = 'You already guessed that letter. Guess another letter: ';
-			} else if (guessedcount === 0) {
-				txt = 'Letter not found. Uh oh. \nGuess a letter: ';
+				txt = 'Hey ' + gameobj.username + '! You already guessed that letter. Guess another letter: ';
+			} else if (gameobj.guessedcount === 0) {
+				txt = 'Uh oh... that letter wasn\'t found, ' + gameobj.username + '. \nGuess a new letter: ';
 				gameobj.gameWord.guesses--;
 				gameobj.gameWord.lettersguessed.push(user.guess);
 			} else {
@@ -139,7 +140,7 @@ Game.prototype.userGuess = function(gameobj, message) {
 Game.prototype.displayWord = function(txt){
 // clear the screen and display header
 	console.log('\033c');
-	this.displayText('Hangman - THE GAME','=');
+	this.displayText('Hangman - THE GAME(TM)','=');
 
 // RENDER THE POOR, POOR HANGED MAN
 	this.gameWord.renderMan(this.gameWord.guesses);
@@ -158,7 +159,7 @@ Game.prototype.displayWord = function(txt){
 // Display guesses remaining and the letters guessed so far
 	msg = 'Guesses remaining: ' + this.gameWord.guesses;
 	if (this.gameWord.lettersguessed.length > 0) {
-		msg += ' | Letters guessed: ' + this.gameWord.lettersguessed;
+		msg += '\n     Letters guessed: ' + this.gameWord.lettersguessed;
 	}
 	this.displayText(msg+'\n');
 
