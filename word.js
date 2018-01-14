@@ -1,10 +1,14 @@
+var inquirer = require('inquirer');
+var Letter = require('./letter');
+
 function Word() {
-	console.log('I Worded.');
 	// No word when first created.
 	this.word = '';
 
 	// Set number of guesses for this word to 5 by default.
 	this.guesses = 5;
+	this.guessed = false;
+	this.first = true;
 }
 
 
@@ -15,20 +19,17 @@ Word.prototype.randomNumber = function(int){
 };
 
 Word.prototype.getWord = function(arr){
-	console.log('Getting word from:',arr);
+// Get the index of the word to select from the array passed in.
 	var arrLength = arr.length;
-	console.log('Array length:',arrLength);
-	// Get the index of the word to select from the array passed in.
 	var wordNum = this.randomNumber(arrLength);
-	console.log('Index of word:',wordNum);
-	// Set the object to the word
+// Set the object's word to the random word
 	this.word = arr[wordNum];
-	console.log('Word selected:',arr[wordNum]);
-	console.log('Word assigned to instance:',this.word);
 };
 
-Word.prototype.debugWord = function(){
-	console.log('Debugging [Display Word]: ',this.word);
+Word.prototype.resetWord = function(){
+	this.word = '';
+	this.guesses = 5;
+	this.guessed = false;
 };
 
 module.exports = Word;
