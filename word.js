@@ -1,6 +1,8 @@
 var inquirer = require('inquirer');
 var Letter = require('./letter');
 
+
+// Word constructor, creates a new word to play with.
 function Word() {
 	// No word when first created.
 	this.word = '';
@@ -12,13 +14,23 @@ function Word() {
 	this.lettersguessed = [];
 }
 
-
+// ----------------------------------------------------------------------------
+// Method: randomNumber(int)
+// ----------------------------------------------------------------------------
+// Description: Returns a number between 0 and int, exclusive.
+//              This allows to choose a random index number for an array.
+// ----------------------------------------------------------------------------
 Word.prototype.randomNumber = function(int){
 	var max = Math.floor(int);
 	var rnd = Math.floor(Math.random() * max);
 	return rnd;
 };
 
+// ----------------------------------------------------------------------------
+// Method: getWord(arr)
+// ----------------------------------------------------------------------------
+// Description: Selects a random word from an array passed into the function.
+// ----------------------------------------------------------------------------
 Word.prototype.getWord = function(arr){
 // Get the index of the word to select from the array passed in.
 	console.log('[Debug] Getting word...');
@@ -29,6 +41,11 @@ Word.prototype.getWord = function(arr){
 	console.log('[Debug] Got word:',this.word);
 };
 
+// ----------------------------------------------------------------------------
+// Method: resetWord
+// ----------------------------------------------------------------------------
+// Description: Reset the current instance of the Word to original values.
+// ----------------------------------------------------------------------------
 Word.prototype.resetWord = function(){
 	this.word = '';
 	this.guesses = 7;
@@ -37,6 +54,11 @@ Word.prototype.resetWord = function(){
 	this.lettersguessed = [];
 };
 
+// ----------------------------------------------------------------------------
+// Method: renderMan
+// ----------------------------------------------------------------------------
+// Description: The hangman object.
+// ----------------------------------------------------------------------------
 Word.prototype.renderMan = function(int){
 	switch (int) {
 		

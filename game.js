@@ -85,7 +85,16 @@ Game.prototype.userGuess = function(gameobj, message) {
 		{
 			type: 'input',
 			name: 'guess',
-			message: message
+			message: message,
+			validate: function(value){
+				var isok = value.match(/^[a-zA-Z]+$/);
+				if (value.length === 1) {
+					if (isok) {
+						return true;
+					}
+				}
+				return 'Please enter one letter';
+			}
 		}
 	])
 	.then(
@@ -116,6 +125,7 @@ Game.prototype.userGuess = function(gameobj, message) {
 				gameobj.gameWord.lettersguessed.push(user.guess);
 			} else {
 				txt = 'Guess a letter: ';
+				gameobj.gameWord.lettersguessed.push(user.guess);
 			}
 			gameobj.displayWord(txt);
 	});
