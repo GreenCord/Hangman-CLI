@@ -21,10 +21,12 @@ Word.prototype.randomNumber = function(int){
 
 Word.prototype.getWord = function(arr){
 // Get the index of the word to select from the array passed in.
+	console.log('[Debug] Getting word...');
 	var arrLength = arr.length;
 	var wordNum = this.randomNumber(arrLength);
 // Set the object's word to the random word
 	this.word = arr[wordNum];
+	console.log('[Debug] Got word:',this.word);
 };
 
 Word.prototype.resetWord = function(){
