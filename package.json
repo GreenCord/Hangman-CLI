@@ -1,0 +1,27 @@
+{
+  "name": "hangman-cli",
+  "version": "1.0.0",
+  "description": "Play hangman in a CLI Node application.",
+  "main": "game.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GreenCord/Hangman-CLI.git"
+  },
+  "keywords": [
+    "Hangman",
+    "Game",
+    "Nodejs"
+  ],
+  "author": "Steven Martinez",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GreenCord/Hangman-CLI/issues"
+  },
+  "homepage": "https://github.com/GreenCord/Hangman-CLI#readme",
+  "dependencies": {
+    "inquirer": "^5.0.0"
+  }
+}
