@@ -4,8 +4,11 @@ var Letter = require('./letter');
 var wordList = require('./wordList');
 
 
-var word = new Word();
+var gameWord = new Word();
 var letters = [];
+var guessedcount = 0;
+
+var dbg = process.argv[2];
 
 function playAgain(){
 	inquirer.prompt([
@@ -19,88 +22,132 @@ function playAgain(){
 		if (user.again === 'Yes') {
 			initGame();
 		} else {
-			console.log('Thanks for playing!');
+			console.log('\033c');
+			displayText('Thanks for playing!!!','=');
 			return;
 		}
 	});
 }
 
-function initGame(txt){
-	word.resetWord();
-// Select word
-	word.getWord(wordList);
-	console.log('[Debug] Word selected:',word);
-// Create Letters
-	for (var i = 0; i < word.word.length; i++) {
-		letters[i] = new Letter(word.word[i]);
+function displayText(txt,char) {
+	if (char === '-') {
+		console.log('----------------------------------------');
+		console.log('     ' + txt);
+		console.log('----------------------------------------');
+	} else if (char === '=') {
+		console.log('========================================');
+		console.log('     ' + txt);
+		console.log('========================================');
+	} else {
+		console.log('     ' + txt);
 	}
-	console.log('[Debug] Letters:', letters);
-	displayWord();
 }
 
-function userGuess() {
-	console.log('[Debug] Getting user input...');
+function initGame(){
+// Reset word, select new word, create letters
+	gameWord.resetWord();
+	gameWord.getWord(wordList);
+	letters = [];
+	for (var i = 0; i < gameWord.word.length; i++) {
+		letters[i] = new Letter(gameWord.word[i]);
+	}
+	displayWord('Guess a letter: ');
+}
+
+function userGuess(message) {
+	// Get user's letter to guess
 	inquirer.prompt([
 		{
 			type: 'input',
 			name: 'guess',
-			message: 'Guess a letter: '
+			message: message
 		}
 	])
 	.then(
 		function(user){
-			console.log('[Debug] User Guess: ',user.guess);
-			for (var i = 0; i < letters.length; i++) {
-				if (user.guess.toLowerCase() === letters[i].letter.toLowerCase()) {
-					letters[i].guessed = true;
+			guessedcount = 0;
+			var existingmatch = false;
+			var txt = '';
+			// check guess against previously guessed letters
+			for (var i = 0; i < gameWord.lettersguessed.length; i++) {
+				if (user.guess.toLowerCase() === gameWord.lettersguessed[i].toLowerCase()) {
+					existingmatch = true;
 				}
 			}
-			displayWord();
-		});
+
+			// check guess against all letters, mark guessed as true for matches
+			for (var j = 0; j < letters.length; j++) {
+				if (user.guess.toLowerCase() === letters[j].letter.toLowerCase()) {
+					letters[j].guessed = true;
+					guessedcount++;
+				} // end if
+			} // end for
+
+			if (existingmatch) {
+				txt = 'You already guessed that letter. Guess another letter: ';
+			} else if (guessedcount === 0) {
+				txt = 'Letter not found. Uh oh. \nGuess a letter: ';
+				gameWord.guesses--;
+				gameWord.lettersguessed.push(user.guess);
+			} else {
+				txt = 'Guess a letter: ';
+			}
+			displayWord(txt);
+	});
 }
 
-function displayWord() {
-	var msg = '';
-	var letterGuessed = false;
-	var guessedcount = 0;
-	console.log('[Debug] Displaying word. Guesses remaining:',word.guesses);
-	
-// Run through word's letters, display the guessed ones. Count
-// when a letter was guessed successfully.
+function getTrue(){
+	var int = 0;
+	for (var i = 0; i < letters.length; i++) {
+		if (letters[i].guessed) {
+			int++;
+		}
+	}
+	return int;
+}
+
+function displayWord(txt) {
+	var msg = 'Word to Guess: ';
+	console.log('\033c');
+	displayText('Hangman - THE GAME','=');
+
+// RENDER THE POOR, POOR HANGED MAN
+	gameWord.renderMan(gameWord.guesses);
+
+// Run through word's letters, display the guessed ones.
 	for (var i = 0; i < letters.length; i++) {
 		if (letters[i].guessed) {
 			msg += letters[i].letter + ' ';
-			guessedcount++;
 		} else {
 			msg += letters[i].display + ' ';
 		}
 	}
-	console.log(':: ' + msg.trim() + ' ::');
+	displayText('' + msg.trim(),'-');
 
-	// check if won or lost
-	if (guessedcount === letters.length) {
-		console.log('Congratulations! You won.');
-		word.guessed = true;
-	} else  if	(word.guesses <= 0) {
-		console.log('YOU LOST. HA HA');
+// Display guesses remaining and the letters guessed so far
+	msg = 'Guesses remaining: ' + gameWord.guesses;
+	if (gameWord.lettersguessed.length > 0) {
+		msg += ' | Letters guessed: ' + gameWord.lettersguessed;
 	}
-	// get user guess if guesses remaining
-	if ((word.guesses > 0) && !word.guessed) {
-		word.guesses--;
-		userGuess();
+	displayText(msg+'\n');
+
+// check if won or lost
+	if (getTrue() === letters.length) {
+		displayText('Congratulations! You won.','=');
+		gameWord.guessed = true;
+	} else  if	(gameWord.guesses <= 0) {
+		displayText('YOU LOST. HA HA','=');
+	}
+
+// get user guess if guesses remaining, or else the game is over, ask to play again
+	if ((gameWord.guesses > 0) && !gameWord.guessed) {
+		gameWord.first = false;
+		userGuess(txt);
 	} else {
 		playAgain();
 	}	
 }
 
-
-
-// If guesses is > 0
-// Prompt User and Display Letters/Placeholder
-// Process letter
-// If wrong, decrement guesses
-// If right, display letters and prompt again
-// If already guessed, just re-prompt
 initGame();
 
 

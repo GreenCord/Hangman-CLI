@@ -5,10 +5,11 @@ function Word() {
 	// No word when first created.
 	this.word = '';
 
-	// Set number of guesses for this word to 5 by default.
-	this.guesses = 5;
+	// Set number of guesses for this word to 7 by default.
+	this.guesses = 7;
 	this.guessed = false;
 	this.first = true;
+	this.lettersguessed = [];
 }
 
 
@@ -28,8 +29,106 @@ Word.prototype.getWord = function(arr){
 
 Word.prototype.resetWord = function(){
 	this.word = '';
-	this.guesses = 5;
+	this.guesses = 7;
 	this.guessed = false;
+	this.first = true;
+	this.lettersguessed = [];
+};
+
+Word.prototype.renderMan = function(int){
+	switch (int) {
+		
+		case (7):
+		console.log('       ____');
+		console.log('      /    |');
+		console.log('      |');
+		console.log('      |');
+		console.log('      |');
+		console.log('      |');
+		console.log('      |');
+		console.log('     ----------');
+		break;
+
+		case (6):
+		console.log('       ____');
+		console.log('      /    |');
+		console.log('      |    @');
+		console.log('      |');
+		console.log('      |');
+		console.log('      |');
+		console.log('      |');
+		console.log('     ----------');
+		break;
+
+		case (5):
+		console.log('       ____');
+		console.log('      /    |');
+		console.log('      |    @');
+		console.log('      |    |');
+		console.log('      |');
+		console.log('      |');
+		console.log('      |');
+		console.log('     ----------');
+		break;
+
+		case (4):
+		console.log('       ____');
+		console.log('      /    |');
+		console.log('      |    @');
+		console.log('      |   /|');
+		console.log('      |');
+		console.log('      |');
+		console.log('      |');
+		console.log('     ----------');
+		break;
+
+		case (3):
+		console.log('       ____');
+		console.log('      /    |');
+		console.log('      |    @');
+		console.log('      |   /|\\');
+		console.log('      |');
+		console.log('      |');
+		console.log('      |');
+		console.log('     ----------');
+		break;
+
+		case (2):
+		console.log('       ____');
+		console.log('      /    |');
+		console.log('      |    @');
+		console.log('      |   /|\\');
+		console.log('      |    |');
+		console.log('      |');
+		console.log('      |');
+		console.log('     ----------');
+		break;
+
+		case (1):
+		console.log('       ____');
+		console.log('      /    |');
+		console.log('      |    @');
+		console.log('      |   /|\\');
+		console.log('      |    |');
+		console.log('      |   /');
+		console.log('      |');
+		console.log('     ----------');
+		break;
+
+		case (0):
+		console.log('       ____');
+		console.log('      /    |');
+		console.log('      |    @');
+		console.log('      |   /|\\');
+		console.log('      |    |');
+		console.log('      |   / \\');
+		console.log('      |');
+		console.log('     ----------');
+		break;
+
+		default: 
+		console.log('WAT HAPPEN DIS BROKE');
+	}
 };
 
 module.exports = Word;
