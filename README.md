@@ -1,4 +1,5 @@
-# Hangman - THE GAME(TM) / A Command Line Interface Game
+# Hangman - THE GAME(TM)
+# A Command Line Interface Game
 Play hangman in a CLI Node.js application
 
 ## How to Play
